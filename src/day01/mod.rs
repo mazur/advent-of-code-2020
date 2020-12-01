@@ -6,8 +6,8 @@ pub fn run() {
     let part1 = find_2020_2sum(&input);
     let part2 = find_2020_3sum(&input);
 
-    println!("Day01 - Solution 1: {}", multiplay(&part1));
-    println!("Day01 - Solution 2: {}", multiplay(&part2));
+    println!("Day01 - Solution 1: {}", multiply(&part1));
+    println!("Day01 - Solution 2: {}", multiply(&part2));
 }
 
 fn find_2020_2sum(input: &Vec<i32>) -> [i32; 2] {
@@ -34,7 +34,7 @@ fn find_2020_3sum(input: &Vec<i32>) -> [i32; 3] {
     panic!("No numbers equal the year of the palgue!")
 }
 
-fn multiplay(numbers: &[i32]) -> i32 {
+fn multiply(numbers: &[i32]) -> i32 {
     numbers.iter().fold(1, | prod, i | prod * i)
 }
 
