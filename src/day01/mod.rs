@@ -3,30 +3,47 @@ use std::fs;
 pub fn run() {
     let input = read_input_data();
 
-    let result = find_2020(input);  
-    
-    let solution1 = result.0 * result.1;
+    let part1 = find_2020_2sum(&input);
+    let part2 = find_2020_3sum(&input);
 
-    println!("Day01 - Solution 1: {}", solution1);
+    println!("Day01 - Solution 1: {}", multiplay(&part1));
+    println!("Day01 - Solution 2: {}", multiplay(&part2));
 }
 
-fn find_2020(input: Vec<i32>) -> (i32, i32) {
+fn find_2020_2sum(input: &Vec<i32>) -> [i32; 2] {
     for first in input.iter() {
         for second in input.iter() {
             if first + second == 2020 {
-                return (*first, *second);
+                return [*first, *second];
             }
         }
     }
     panic!("No numbers equal the year of the palgue!")
 }
 
+fn find_2020_3sum(input: &Vec<i32>) -> [i32; 3] {
+    for first in input.iter() {
+        for second in input.iter() {
+            for third in input.iter() {
+                if first + second + third == 2020 {
+                    return [*first, *second, *third];
+                }
+            }
+        }
+    }
+    panic!("No numbers equal the year of the palgue!")
+}
+
+fn multiplay(numbers: &[i32]) -> i32 {
+    numbers.iter().fold(1, | prod, i | prod * i)
+}
+
 fn read_input_data() -> Vec<i32> {
-    fs::read_to_string("day01/input.txt")
+    fs::read_to_string("src/day01/input.txt")
         .expect("Could not read input file")
         .lines()
         .map(|i| i.parse().expect("Could not parse value"))
-        .collect();
+        .collect()
 }
 
 
@@ -35,11 +52,11 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_find_2020() {
+    fn test_find_2020_2sum() {
         let input = vec![1721, 979, 366, 299, 675, 1456];
 
-        let res = find_2020(input);
+        let res = find_2020_2sum(&input);
 
-        assert_eq!(res.0 + res.1, 2020);
+        assert_eq!(res[0] + res[1], 2020);
     }
 }
