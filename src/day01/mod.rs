@@ -39,7 +39,9 @@ fn multiply(numbers: &[i32]) -> i32 {
 }
 
 fn read_input_data() -> Vec<i32> {
-    fs::read_to_string("src/day01/input.txt")
+    println!("{}{}", module_path!(), "/input.txt");
+
+    fs::read_to_string(format!("{}{}", module_path!(), "/input.txt"))
         .expect("Could not read input file")
         .lines()
         .map(|i| i.parse().expect("Could not parse value"))
