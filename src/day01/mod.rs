@@ -1,5 +1,3 @@
-use std::fs;
-
 pub fn run() {
     let input = read_input_data();
 
@@ -39,10 +37,7 @@ fn multiply(numbers: &[i32]) -> i32 {
 }
 
 fn read_input_data() -> Vec<i32> {
-    println!("{}{}", module_path!(), "/input.txt");
-
-    fs::read_to_string(format!("{}{}", module_path!(), "/input.txt"))
-        .expect("Could not read input file")
+    include_str!("input.txt")
         .lines()
         .map(|i| i.parse().expect("Could not parse value"))
         .collect()
