@@ -1,20 +1,10 @@
 pub fn run() {
-    let input: Vec<&str> = include_str!("input.txt")
-                                .lines()
-                                .collect();
+    let input = parse_input_data(include_str!("input.txt"));
 
     let mut valid_count: i32  = 0;
 
     for entry in input.iter() {
-        let rules_password: Vec<&str> = entry.split(|c| c == '-' || c == ' ').collect();
-        
-        let key = rules_password[2].chars().next().unwrap();
-        let min = rules_password[0].parse().expect("Could not parse min.");
-        let max = rules_password[1].parse().expect("Could not parse max.");
-        let password = rules_password[3];
-
-
-        if is_valid_password(key, min, max, password) {
+        if is_valid_password(entry.0, entry.1, entry.2, entry.3) {
             valid_count += 1;
         }
     }
@@ -22,11 +12,36 @@ pub fn run() {
     println!("{}", valid_count);
 }
 
-fn is_valid_password(key: char, min: usize, max: usize, password: &str) -> bool{
+fn is_valid_password(min: usize, max: usize, key: char, password: &str) -> bool{
     let count = password.matches(key).count();
 
     count >= min && count <= max
 }
+
+fn parse_input_data(input: &str) -> Vec<(usize, usize, char, &str)> {
+    input.lines()
+        .map(parse_line)
+        .collect()
+}
+
+fn parse_line(line: &str) -> (usize, usize, char, &str) {
+  
+    let mut rules_password = line.split(|c| c == '-' || c == ' ');
+    
+    (
+        rules_password
+            .next().expect("Wrong number of arguments on line.")
+            .parse().expect("Could not parse min."),
+        rules_password
+            .next().expect("Wrong number of arguments on line.")
+            .parse().expect("Could not parse max."),
+        rules_password
+            .next().expect("Wrong number of arguments on line.")
+            .chars().next().unwrap(),
+        rules_password.next().expect("Wrong number of arguments on line.")
+    )
+}
+
 
 #[cfg(test)]
 mod tests {
