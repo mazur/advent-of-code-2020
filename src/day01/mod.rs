@@ -4,8 +4,8 @@ pub fn run() {
     let part1 = find_2020_2sum(&input);
     let part2 = find_2020_3sum(&input);
 
-    println!("Day01 - Solution 1: {}", multiply(&part1));
-    println!("Day01 - Solution 2: {}", multiply(&part2));
+    println!("Day01 - Part 1: {}", multiply(&part1));
+    println!("Day01 - Part 2: {}", multiply(&part2));
 }
 
 fn find_2020_2sum(input: &Vec<i32>) -> [i32; 2] {
