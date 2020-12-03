@@ -1,11 +1,13 @@
+use crate::util;
+
 pub fn run() {
     let input = read_input_data();
 
     let part1 = find_2020_2sum(&input);
     let part2 = find_2020_3sum(&input);
 
-    println!("Day01 - Part 1: {}", multiply(&part1));
-    println!("Day01 - Part 2: {}", multiply(&part2));
+    println!("Day01 - Part 1: {}", util::multiply(&part1));
+    println!("Day01 - Part 2: {}", util::multiply(&part2));
 }
 
 fn find_2020_2sum(input: &Vec<i32>) -> [i32; 2] {
@@ -30,10 +32,6 @@ fn find_2020_3sum(input: &Vec<i32>) -> [i32; 3] {
         }
     }
     panic!("No numbers equal the year of the palgue!")
-}
-
-fn multiply(numbers: &[i32]) -> i32 {
-    numbers.iter().fold(1, | prod, i | prod * i)
 }
 
 fn read_input_data() -> Vec<i32> {
