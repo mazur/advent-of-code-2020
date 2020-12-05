@@ -1,17 +1,29 @@
 pub fn run() {
     let boarding_passes: Vec<&str> = include_str!("input.txt").lines().collect();
-    let mut max_sid = 0;
+    let mut sids: Vec<i32> = Vec::new();
 
     for bp in boarding_passes {
         let (r, c) = bp.split_at(7);
         let sid = find_number_from_sequence(r, 127) * 8 + find_number_from_sequence(c, 7);
 
-        if max_sid < sid {
-            max_sid = sid;
-        }
+        sids.push(sid);
     }
 
-    println!("Day05 - Part 1: {}", max_sid);
+    sids.sort();
+
+    let seat = find_seat_number(&sids);
+
+    println!("Day05 - Part 1: {}", sids[sids.len()-1]);
+    println!("Day05 - Part 1: {}", seat);
+}
+
+fn find_seat_number(sorted_sids: &Vec<i32>) -> i32 {
+    for n in 0..sorted_sids.len() {
+        if (sorted_sids[n+1] - sorted_sids[n]) == 2 {
+            return sorted_sids[n]+1;
+        }
+    }
+    panic!("Can't find seat");
 }
 
 fn find_number_from_sequence(seq: &str, max: i32) -> i32 {
