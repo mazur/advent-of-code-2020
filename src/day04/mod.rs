@@ -3,14 +3,16 @@ use std::collections::HashMap;
 pub fn run() {
     let valid_passports = count_valid_passports(include_str!("input.txt"));
 
-    println!("Day04 - Part 1: {}", valid_passports);
+    println!("Day04 - Part 1: {}", valid_passports.0);
+    println!("Day04 - Part 2: {}", valid_passports.1);
 }
 
-fn count_valid_passports(pp_str: &str) -> i32 {
+fn count_valid_passports(pp_str: &str) -> (i32, i32) {
     let pp_data: Vec<&str> = pp_str.split("\n\n")
                                     .collect();
     
     let mut valid_passports = 0;
+    let mut valid_and_validated = 0;
     
     for pp in pp_data {
         let passport = Passport::from_str(pp);
@@ -18,9 +20,13 @@ fn count_valid_passports(pp_str: &str) -> i32 {
         if passport.is_valid() {
             valid_passports += 1;
         }
+
+        if passport.is_valid_and_validated() {
+            valid_and_validated += 1;
+        }
     }
 
-    valid_passports
+    (valid_passports, valid_and_validated)
 }
 
 struct Passport {
@@ -45,6 +51,78 @@ impl Passport {
     fn is_valid(&self) -> bool {
         self.passport_data.len() > 7 || 
         (self.passport_data.len() > 6 && !self.passport_data.contains_key("cid"))
+    }
+
+    // ecl (Eye Color) - exactly one of: amb blu brn gry grn hzl oth.
+    fn is_valid_ecl(&self) -> bool {
+        match self.passport_data.get("ecl") {
+            Some(ecl) => {
+                match ecl.as_ref() {
+                    "amb" | "blu" | "brn" | "gry" | "grn" | "hzl" | "oth" => true,
+                    _ => false
+                }
+            },
+            None => false
+        }
+    }
+
+    // hgt (Height) - a number followed by either cm or in:
+    //  If cm, the number must be at least 150 and at most 193.
+    //  If in, the number must be at least 59 and at most 76.
+    fn is_valid_hgt(&self) -> bool {
+        match self.passport_data.get("hgt") {
+            Some(hgt) => Passport::validate_hgt(hgt),
+            None => false
+        }
+    }
+
+    fn validate_hgt(hgt: &str) -> bool {
+        let (hgt, unit) = hgt.split_at(hgt.len()-2);
+        let hgt: i32 = match hgt.parse() {
+            Ok(h) => h,
+            Err(_) => 0
+        };
+
+        match unit {
+            "cm" => hgt >= 150 && hgt <= 193,
+            "in" => hgt >= 59 && hgt <= 76,
+            _ => false
+        }
+    }
+
+    // byr (Birth Year) - four digits; at least 1920 and at most 2002.
+    fn is_valid_byr(&self) -> bool {
+        self.is_year_field_between("byr", 1920, 2002)
+    }
+
+    // iyr (Issue Year) - four digits; at least 2010 and at most 2020.
+    fn is_valid_iyr(&self) -> bool {
+        self.is_year_field_between("iyr", 2010, 2020)
+    }
+
+    // eyr (Expiration Year) - four digits; at least 2020 and at most 2030.
+    fn is_valid_eyr(&self) -> bool {
+        self.is_year_field_between("eyr", 2020, 2030)
+    }
+
+    fn is_year_field_between(&self, field: &str, from: i32, to: i32) -> bool {
+        match self.passport_data.get(field) {
+            Some(year) => {
+                let y: i32 = year.parse().expect(&format!("Could not parse {}", field));
+                y >= from && y<= to
+            },
+            None => false
+        }
+    }
+
+    fn is_valid_and_validated(&self) -> bool {
+        /*
+        hcl (Hair Color) - a # followed by exactly six characters 0-9 or a-f.
+        pid (Passport ID) - a nine-digit number, including leading zeroes.
+        cid (Country ID) - ignored, missing or not.
+        */
+        
+        self.is_valid_byr() && self.is_valid_iyr() && self.is_valid_eyr() && self.is_valid_hgt() && self.is_valid_ecl()
     }
 }
 
@@ -100,7 +178,7 @@ hgt:179cm";
     fn test_count_valid_passports() {
         let valid_passports = count_valid_passports(TEST_INPUT);
 
-        assert_eq!(2, valid_passports);
+        assert_eq!(2, valid_passports.0);
     }
 
 }
