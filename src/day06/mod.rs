@@ -1,18 +1,45 @@
 pub fn run() {
     let groups: Vec<&str> = include_str!("input.txt").split("\n\n").collect();
+    let mut some = 0;
+    let mut all = 0;
 
-    let sum_of_unique = groups.iter().fold(0, | sum, g | sum + count_chars_in_group(g));
+    for g in groups.iter() {
+        let a = count_answers_in_group(g);
+        some += a.0;
+        all += a.1;
+    }
 
-    println!("Day06 - Part 1: {}", sum_of_unique);
+    println!("Day06 - Part 1: {}", some);
+    println!("Day06 - Part 2: {}", all);
 }
 
-fn count_chars_in_group(forms: &str) -> i32 {
-    let mut sorted: Vec<char> = forms.chars().collect();
-    sorted.sort();
-    sorted.dedup();
-    sorted.retain(|c| !c.is_whitespace());
+fn count_answers_in_group(forms: &str) -> (i32, i32) {
+    let chars: Vec<char> = forms.chars().collect();
+    let mut count: [i32; 26] = [0; 26];
+    let mut num_of_groups = 1;
 
-    sorted.len() as i32
+    for c in chars.iter() {
+        if c.is_whitespace() {
+            num_of_groups += 1;
+        }
+        else {
+            count[(*c as usize)-97] += 1;
+        }
+    }
+
+    let mut some = 0;
+    let mut all = 0;
+
+    for c in count.iter() {
+        if *c > 0 {
+            some += 1;
+        }
+        if *c == num_of_groups {
+            all += 1;
+        }
+    }
+
+    (some, all)
 }
 
 #[cfg(test)]
@@ -20,9 +47,10 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_count_chars_in_string() {
-        let count = count_chars("ab
+    fn test_count_answers_in_group() {
+        let count = count_answers_in_group("ab
 ac");
-        assert_eq!(3, count);
+        assert_eq!(3, count.0);
+        assert_eq!(1, count.1);
     }
 }
