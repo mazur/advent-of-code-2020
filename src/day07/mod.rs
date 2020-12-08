@@ -2,7 +2,10 @@ use std::collections::HashMap;
 use itertools::Itertools;
 
 pub fn run() {
-    println!("Day07");
+    let system = BagSystem::build_from_rules(include_str!("input.txt"));
+    let can_contain_shiny_gold = system.count_contains("shiny gold");
+
+    println!("Day07 - Part 1: {}", can_contain_shiny_gold);
 }
 
 struct BagSystem<'a> {
@@ -17,11 +20,22 @@ impl<'a> BagSystem<'a> {
     }
 
     fn count_contains(&self, key: &str) -> usize {
+        let mut all = self.get_all_contains(key);
+        all.sort();
+        all.dedup();
+        all.len()
+    }
+
+    fn get_all_contains(&self, key: &str) -> Vec<&str> {
         match self.bags.get(key) {
             Some(b) => {
-                b.iter().fold(b.len(), | count, bag | count + BagSystem::count_contains(self, bag))
+                let mut res = b.to_vec();
+                for contained in b {
+                    res.append(&mut BagSystem::get_all_contains(self, contained));
+                }
+                res
             },
-            None => 0
+            None => Vec::new()
         }
     }
 
@@ -110,7 +124,16 @@ dotted black bags contain no other bags.";
     }
 
     #[test]
-    fn test_count_bag_contains() {
+    fn test_get_all_bag_contains() {
+        let system = BagSystem::build_from_rules(TEST_INPUT);
+
+        let res = system.get_all_contains("shiny gold");
+
+        assert_eq!(6, res.len());
+    }
+
+    #[test]
+    fn test_count_contains() {
         let system = BagSystem::build_from_rules(TEST_INPUT);
 
         let res = system.count_contains("shiny gold");
