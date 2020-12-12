@@ -15,12 +15,13 @@ mod day07;
 mod day08;
 mod day09;
 mod day10;
+mod day11;
 mod day12;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
     let day: i32 = args[1].parse()
-                            .expect("blah blah");
+                            .expect("No day specified in command line.");
 
     match day {
         1 => day01::run(),
@@ -33,6 +34,7 @@ fn main() {
         8 => day08::run(),
         9 => day09::run(),
         10 => day10::run(),
+        11 => day11::run(),
         12 => day12::run(),
         _ => panic!()
     }
