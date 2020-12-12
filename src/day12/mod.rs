@@ -7,28 +7,49 @@ pub fn run() {
     println!("Day12 - Part 1: {}", manhattan_p1);
 
     let cords_p2 = run_boat_waypoint((-10,1), &nav);
-    let manhattan_p2 = cords_p2.0.abs() + cords_p2.1.abs();
+    let manhattan_p2 = cords_p2.x.abs() + cords_p2.y.abs();
 
     println!("Day12 - Part 1: {}", manhattan_p2);
 }
 
-fn run_boat_waypoint(start: (i32, i32), nav: &Vec<&str>) -> (i32, i32) {
-    let mut waypoint = start;
-    let mut cords = (0,0);
+struct Cords {
+    x: i32,
+    y: i32
+}
+
+impl Cords {
+    fn new (x:i32, y:i32) -> Self{
+        Cords { x: x, y: y }
+    }
+
+    fn move_to(&mut self, c: Cords, i: i32) {
+        self.x += i * c.x;
+        self.y += i * c.y;
+    }
+}
+
+impl From<(i32, i32)> for Cords {
+    fn from(n: (i32, i32)) -> Self {
+        Cords { x: n.0, y: n.1 }
+    }
+}
+
+fn run_boat_waypoint(start: (i32, i32), nav: &Vec<&str>) -> Cords {
+    let mut waypoint = Cords::from(start);
+    let mut cords = Cords::new(0,0);
 
     for n in nav {
         let (move_dir, step) = parse_move(n);
 
         if move_dir == 'F' {
-            cords.0 += step * waypoint.0;
-            cords.1 += step * waypoint.1;
+            cords.move_to(waypoint, step);
         } 
         else {
             match move_dir {
-                'N' => waypoint.1 += step,
-                'S' => waypoint.1 -= step,
-                'E' => waypoint.0 -= step,
-                'W' => waypoint.0 += step,
+                'N' => waypoint.y += step,
+                'S' => waypoint.y -= step,
+                'E' => waypoint.x -= step,
+                'W' => waypoint.x += step,
                 'L' => waypoint = turn_waypoint(waypoint, true, step),
                 'R' => waypoint = turn_waypoint(waypoint, false, step),
                 _ => panic!("Unknown move!")
@@ -39,7 +60,7 @@ fn run_boat_waypoint(start: (i32, i32), nav: &Vec<&str>) -> (i32, i32) {
     cords
 }
 
-fn turn_waypoint(wp: (i32, i32), rev: bool, deg: i32) -> (i32, i32) {
+fn turn_waypoint(wp: Cords, rev: bool, deg: i32) -> Cords{
     let mut ticks = deg/90;
     let mut new_wp = wp;
 
@@ -48,7 +69,7 @@ fn turn_waypoint(wp: (i32, i32), rev: bool, deg: i32) -> (i32, i32) {
     }
 
     for _ in 0..ticks {
-        new_wp = (-new_wp.1, new_wp.0);
+        new_wp = Cords::new(-new_wp.y, new_wp.x);
     }
 
     new_wp
@@ -118,9 +139,9 @@ mod tests {
 
     #[test]
     fn test_run_boat_waypoint() {
-        let (x, y) = run_boat_waypoint((-10, 1), &vec!["F10", "N3", "F7", "R90", "F11"]);
+        let cords = run_boat_waypoint((-10, 1), &vec!["F10", "N3", "F7", "R90", "F11"]);
     
-        assert_eq!(-214, x);
-        assert_eq!(-72, y);
+        assert_eq!(-214, cords.x);
+        assert_eq!(-72, cords.y);
     }
 }
