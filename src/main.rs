@@ -17,6 +17,7 @@ mod day09;
 mod day10;
 mod day11;
 mod day12;
+mod day15;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -36,6 +37,7 @@ fn main() {
         10 => day10::run(),
         11 => day11::run(),
         12 => day12::run(),
+        15 => day15::run(),
         _ => panic!()
     }
 }
