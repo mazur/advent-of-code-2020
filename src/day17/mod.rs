@@ -28,6 +28,7 @@ struct Game {
 }
 
 impl Game {
+    #[allow(dead_code)]
     fn new() -> Self {
         Game {
             board: Vec::new()
